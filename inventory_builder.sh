@@ -12,7 +12,7 @@ if [ -d "${PATH_ROOT}/inventory" ]; then
 fi
 
 cp -rfp inventory/sample "${PATH_ROOT}/inventory"
-export CONFIG_FILE="${PATH_ROOT}/inventory/inventory.yaml"
+export CONFIG_FILE="${PATH_ROOT}/inventory/hosts.yaml"
 
 source venv/bin/activate
 exec python contrib/inventory_builder/inventory.py $*
