@@ -1,0 +1,41 @@
+---
+
+- name: Resolv
+  hosts: all
+  vars:
+    resolv_hosts:
+      - 185.55.226.26
+      - 185.55.226.25
+      - 185.51.200.2
+      - 178.22.122.100
+  tasks:
+
+    # sudo cp /etc/resolv.conf /etc/resolv.conf.bak
+    - name: Backup resolv.conf
+      become: true
+      tags: [ add ]
+      copy:
+        src: /etc/resolv.conf
+        dest: /etc/resolv.conf.bak
+        backup: yes
+
+    # sudo echo "nameserver ${IP}" >> /etc/resolv.conf
+    - name: Insert nameservers
+      become: true
+      tags: [ add ]
+      lineinfile:
+        path: /etc/resolv.conf
+        line: "nameserver {{ item }}"
+        insertbefore: BOF
+      loop: "{{ resolv_hosts }}"
+      
+
+    # sudo sed -i '/nameserver ${IP}/d' /etc/resolv.conf
+    - name: Remove nameservers
+      become: true
+      tags: [ never, remove ]
+      lineinfile:
+        path: /etc/resolv.conf
+        regexp: '^nameserver {{ item }}'
+        state: absent
+      loop: "{{ resolv_hosts }}"
